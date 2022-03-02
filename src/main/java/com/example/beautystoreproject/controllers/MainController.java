@@ -1,0 +1,130 @@
+package com.example.beautystoreproject.controllers;
+
+import com.example.beautystoreproject.entities.Category;
+import com.example.beautystoreproject.entities.Gender;
+import com.example.beautystoreproject.entities.Product;
+import com.example.beautystoreproject.entities.UniUser;
+import com.example.beautystoreproject.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class MainController {
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private SubcategoryService subcategoryService;
+
+    @Autowired
+    private GenderService genderService;
+
+    @Autowired
+    private Product emptyProduct;
+
+    @Autowired
+    private UniUserService uniUserService;
+
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public String getAllProducts(Model model) {
+        model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("subcategories", subcategoryService.getAllSubcategories());
+        model.addAttribute("genders", genderService.getAllGenders());
+        model.addAttribute("product", emptyProduct);
+        model.addAttribute("currentUser", getUserData());
+        return "index";
+    }
+
+    @PostMapping(value = "/add-product")
+    public String addProduct(@ModelAttribute(name = "product") Product product) {
+        productService.addProduct(product);
+        return "redirect:/";
+    }
+
+    @PostMapping(value = "/product")
+    public String addStudent(@RequestBody Product product) {
+        productService.addProduct(product);
+        return "success";
+    }
+
+    @GetMapping(value = "/details/{productId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String getProductById(Model model, @PathVariable(name = "productId") Long id) {
+        model.addAttribute("product", productService.getProductById(id));
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("subcategories", subcategoryService.getAllSubcategories());
+        model.addAttribute("genders", genderService.getAllGenders());
+        model.addAttribute("currentUser", getUserData());
+        return "/details";
+    }
+
+    @PostMapping(value = "/update-product/{productId}")
+    public String updateProduct(@PathVariable(name = "productId") Long id,
+                                @ModelAttribute(name = "product") Product product) {
+        product.setId(id);
+        productService.updateProduct(product);
+        return "redirect:/";
+    }
+
+    @GetMapping(value = "/delete-product/{productId}")
+    public String deleteProductById(@PathVariable(name = "productId") Long productId) {
+        productService.deleteProductById(productId);
+        return "redirect:/";
+    }
+
+    @GetMapping(value = "/filter-by-category/{categoryId}")
+    public String allProductsByCategory(@PathVariable(name = "categoryId") Long categoryId,
+                                        Model model){
+    model.addAttribute("products", productService.findAllByCategoryId(categoryId));
+    model.addAttribute("categories", categoryService.getAllCategories());
+    model.addAttribute("subcategories", subcategoryService.getAllSubcategories());
+    model.addAttribute("genders", genderService.getAllGenders());
+    model.addAttribute("product", emptyProduct);
+    model.addAttribute("currentUser", getUserData());
+    return "index";
+    }
+
+    @GetMapping(value = "/filter-by-subcategory/{subcategoryId}")
+    public String allProductsBySubcategory(@PathVariable(name = "subcategoryId") Long subcategoryId,
+                                        Model model){
+        model.addAttribute("products", productService.findAllBySubcategoryId(subcategoryId));
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("subcategories", subcategoryService.getAllSubcategories());
+        model.addAttribute("genders", genderService.getAllGenders());
+        model.addAttribute("product", emptyProduct);
+        model.addAttribute("currentUser", getUserData());
+        return "index";
+    }
+
+    @GetMapping(value = "/login")
+    public String login(){
+        return "/login";
+    }
+
+    @GetMapping(value = "/403")
+    public String accessDenied(){
+        return "/403";
+    }
+
+    public UniUser getUserData(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)){
+            User secUser = (User) authentication.getPrincipal();
+            UniUser uniUser = uniUserService.getUserByEmail(secUser.getUsername());
+            return uniUser;
+        }
+        return null;
+    }
+}

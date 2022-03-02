@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout=http://www.ultraq.net.nz/thymeleaf/layout
+      layout:decorate="layouts/layout">
+<body>
+<div class="col-lg-5 m-5 m-auto" layout:fragment="content">
+    <form th:action="@{'/update-product/' + ${product.id}}" method="post" th:object="${product}">
+        <div class="mb-3">
+            <label for="productName" class="form-label">Name</label>
+            <input th:value="${product.name}" type="text" class="form-control" id="productName" name="productName" th:field="*{name}">
+        </div>
+        <div class="mb-3">
+            <label for="productImageURL" class="form-label">Image URL</label>
+            <input th:value="${product.imageURL}" th:field="*{imageURL}" type="text" class="form-control" id="productImageURL" name="productImageURL">
+        </div>
+        <div class="mb-3">
+            <label for="brand" class="form-label">Brand</label>
+            <input th:value="${product.brand}" th:field="*{brand}" type="text" class="form-control" id="brand" name="brand">
+        </div>
+        <div class="mb-3">
+            <label for="productDescription" class="form-label">Description</label>
+            <input th:value="${product.description}" th:field="*{description}" type="text" class="form-control" id="productDescription" name="productDescription">
+        </div>
+        <div class="mb-3">
+            <label for="ingredients" class="form-label">Ingredients</label>
+            <input th:value="${product.ingredients}" th:field="*{ingredients}" type="text" class="form-control" id="ingredients" name="ingredients">
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input th:value="${product.price}" th:field="*{price}" type="text" class="form-control" id="price" name="price">
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select name="category" id="category" th:field="*{category.id}">
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Gender</label>
+            <select name="gender" id="gender">
+                <option th:value="${product.gender!=null?product.gender.name:''}" th:text="${product.gender!=null?product.gender.name:''}"></option>
+                <option value="1">муж</option>
+                <option value="2">жен</option>
+                <option value="3">унисекс</option>
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <a th:href="@{'/'}" class="btn btn-secondary">Close</a>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout=http://www.ultraq.net.nz/thymeleaf/layout
+      layout:decorate="layouts/layout">
+<body>
+<div class="col-lg-9" layout:fragment="content">
+    <div class="m-3 text-center">
+        <div class="row d-flex m-auto center">
+            <div class="card col-3 d-block mb-4 mx-3  rounded-3 shadow-sm" th:each="product : ${products}">
+                <div class="card-header py-3">
+                    <h4 class="my-0 fw-normal" th:text="${product.name}"></h4>
+                </div>
+                <div class="card-body">
+                    <img th:src="${product.imageURL}" width="150px"/>
+                    <h1 class="card-title pricing-card-title"><small class="text-muted fw-light" th:text="${product.price}"></small></h1>
+                    <!--<p th:text="${product.description}">-->
+                        <a th:href="@{'/details/' + ${product.id}}" type="button" style="border-color: gray; color: gray; margin-bottom: 5px;" class="w-100 btn btn-lg btn-outline-primary">Подробнее</a>
+                        <a th:href="@{'/delete-product/' + ${product.id}}" type="button" class="w-100 btn btn-lg btn-danger">Удалить</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="modal fade" id="addProduct">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавить продукт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{'/add-product'}" method="post" th:object="${product}">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Название</label>
+                        <input th:field="*{name}" type="text" class="form-control" id="productName" name="productName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="productImageURL" class="form-label">Фото продукта (URL)</label>
+                        <input th:field="*{imageURL}" type="text" class="form-control" id="productImageURL" name="productImageURL">
+                    </div>
+                    <div class="mb-3">
+                        <label for="brand" class="form-label">Бренд</label>
+                        <input th:field="*{brand}" type="text" class="form-control" id="brand" name="brand">
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Описание</label>
+                        <input th:field="*{description}" type="text" class="form-control" id="productDescription" name="productDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ingredients" class="form-label">Ингредиенты</label>
+                        <input th:field="*{ingredients}" type="text" class="form-control" id="ingredients" name="ingredients">
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Цена</label>
+                        <input th:field="*{price}" type="text" class="form-control" id="price" name="price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Категория</label>
+                        <select name="category" id="category">
+                            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Категория</label>
+                        <select name="subcategory" id="subcategory">
+                            <option th:each="subcategory : ${subcategories}" th:value="${subcategory.id}" th:text="${subcategory.name}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Пол</label>
+                        <select name="gender" id="gender">
+                            <option th:each="gender : ${genders}" th:value="${gender.id}" th:text="${gender.name}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Добавить продукт</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>
