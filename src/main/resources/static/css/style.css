@@ -83,7 +83,10 @@ a {
   .form-control:hover, .form-control:active, .form-control:focus {
     -webkit-box-shadow: none !important;
     box-shadow: none !important; }
-
+.modal-dialog {
+  position: absolute;
+  z-index: 9999;
+}
 .site-section {
   padding: 2.5em 0; }
   @media (min-width: 768px) {
@@ -100,7 +103,7 @@ a {
     content: "";
     left: 0%;
     top: 0;
-    position: absolute;
+    position: absolute;/*here*/
     width: 40px;
     height: 2px;
     background: #7971ea; }
@@ -120,7 +123,7 @@ a {
   border-top: 1px solid #edf0f5 !important; }
 
 .site-footer {
-  padding: 4em 0; }
+  padding: 1em 0; }
   .site-footer ul li {
     margin-bottom: 10px; }
     .site-footer ul li a {
@@ -135,8 +138,8 @@ a {
 .site-navbar {
   background: #fff;
   margin-bottom: 0px;
-  z-index: 1999;
-  position: relative; }
+  position: relative;
+  z-index: 1000;}
   .site-navbar.transparent {
     background: transparent; }
   .site-navbar .site-navbar-top {

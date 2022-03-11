@@ -12,4 +12,5 @@ public interface ProductService {
     void updateProduct(Product product);
     List<Product> findAllByCategoryId(Long id);
     List<Product> findAllBySubcategoryId(Long id);
+    List<Product> findAllByGenderId(Long id);
 }

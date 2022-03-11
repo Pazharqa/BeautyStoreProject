@@ -11,9 +11,14 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -35,6 +40,15 @@ public class MainController {
     @Autowired
     private UniUserService uniUserService;
 
+    @Autowired
+    private UniUser emptyUniUser;
+
+    @Autowired
+    private HttpSession session;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public String getAllProducts(Model model) {
@@ -53,11 +67,6 @@ public class MainController {
         return "redirect:/";
     }
 
-    @PostMapping(value = "/product")
-    public String addStudent(@RequestBody Product product) {
-        productService.addProduct(product);
-        return "success";
-    }
 
     @GetMapping(value = "/details/{productId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -107,6 +116,17 @@ public class MainController {
         model.addAttribute("currentUser", getUserData());
         return "index";
     }
+    @GetMapping(value = "/filter-by-gender/{genderId}")
+    public String allProductsByGender(@PathVariable(name = "genderId") Long genderId,
+                                        Model model){
+        model.addAttribute("products", productService.findAllByGenderId(genderId));
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("subcategories", subcategoryService.getAllSubcategories());
+        model.addAttribute("genders", genderService.getAllGenders());
+        model.addAttribute("product", emptyProduct);
+        model.addAttribute("currentUser", getUserData());
+        return "index";
+    }
 
     @GetMapping(value = "/login")
     public String login(){
@@ -126,5 +146,58 @@ public class MainController {
             return uniUser;
         }
         return null;
+    }
+
+    @GetMapping(value = "/register")
+    public String register(Model model) {
+        model.addAttribute("uniUser", emptyUniUser);
+        return "/register";
+    }
+
+    @PostMapping(value = "/register")
+    public String register(@ModelAttribute(name = "uniUser") UniUser newUser,
+                           @RequestParam(name = "uni_user_repassword") String repass) {
+
+        if (newUser.getPassword().equals(repass)) {
+            newUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
+            UniUser user = uniUserService.createUser(newUser);
+
+            if (user != null) {
+                return "redirect:/login?successRegister";
+            }
+            return "redirect:/register?errorEmail";
+        }
+        return "redirect:/register?errorPass";
+    }
+
+    @PostMapping(value = "/add-to-cart/{productId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public String addToCart(Model model, @PathVariable(name = "productId") Long id) {
+        Product product = productService.getProductById(id);
+        if (session.getAttribute("cart") == null){
+            List<Product> cart = new ArrayList<>();
+            cart.add(product);
+            session.setAttribute("cart", cart);
+        } else {
+            List<Product> cart = (List<Product>) session.getAttribute("cart");
+            for (Product p : cart){
+                if (p.getId() == product.getId()){
+                    break;
+                }
+            }
+            cart.add(product);
+            session.setAttribute("cart", cart);
+        }
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("subcategories", subcategoryService.getAllSubcategories());
+        model.addAttribute("genders", genderService.getAllGenders());
+        model.addAttribute("currentUser", getUserData());
+        return "/index";
+    }
+
+    @GetMapping(value = "/cart")
+    public  String getCart(Model model){
+        model.addAttribute("cart", session.getAttribute("cart"));
+        return "cart";
     }
 }

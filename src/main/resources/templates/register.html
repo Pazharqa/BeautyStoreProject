@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<div class="container">
+    <div th:replace="fragments/nav :: nav"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div th:if="${param.errorEmail}" class="alert alert-danger" role="alert">
+                Такой email уже зарегистирован!
+            </div>
+            <div th:if="${param.errorPass}" class="alert alert-danger" role="alert">
+                Пароли должны совпадать!
+            </div>
+            <form th:action="@{'/register'}" method="post" th:object="${uniUser}">
+                <div class="mb-3">
+                    <label for="userName" class="form-label">Имя:</label>
+                    <input type="text" class="form-control" id="userName" th:field="*{name}">
+                </div>
+                <div class="mb-3">
+                    <label for="userEmail" class="form-label">Email:</label>
+                    <input type="text" class="form-control" id="userEmail" th:field="*{email}">
+                </div>
+                <div class="mb-3">
+                    <label for="userPassword" class="form-label">Пароль:</label>
+                    <input type="password" class="form-control" id="userPassword" th:field="*{password}">
+                </div>
+                <div class="mb-3">
+                    <label for="userRePassword" class="form-label">Повторно введите пароль:</label>
+                    <input type="password" class="form-control" id="userRePassword" name="uni_user_repassword">
+                </div>
+                <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

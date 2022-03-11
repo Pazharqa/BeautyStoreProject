@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec = "http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="nav">
+<header class="site-navbar" role="banner">
+    <div class="site-navbar-top">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
+                    <form action="" class="site-block-top-search">
+                        <span class="icon icon-search2"></span>
+                        <input type="text" class="form-control border-0" placeholder="Search">
+                    </form>
+                </div>
+
+                <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
+                    <div class="site-logo">
+                        <a th:href="@{'/'}" class="js-logo-clone">SKIN BEAUTY</a>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 order-3 order-md-3 text-right">
+                    <div class="site-top-icons">
+                        <ul>
+                            <li sec:authorize="isAnonymous()"><a th:href="@{'/login'}">ВОЙТИ</a></li>
+                            <li sec:authorize="isAnonymous()">
+                                <a th:href="@{'/register'}">РЕГИСТРАЦИЯ</a>
+                            </li>
+
+                            <li sec:authorize="isAuthenticated()"><a class="icon icon-person" th:text="${currentUser.name}"></a></li>
+                            <li>
+                                <a th:href="cart.html" class="site-cart">
+                                    <span class="icon icon-shopping_cart"></span>
+                                    <span class="count">2</span>
+                                </a>
+                            </li>
+                            <!--<li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>-->
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <nav class="site-navigation text-right text-md-center" role="navigation">
+        <div class="container">
+            <ul class="site-menu js-clone-nav d-none d-md-block" style="text-decoration: none;">
+                <li class="has-children">
+                    <a th:href="@{'/'}">ВСЕ КАТЕГОРИИ</a>
+                    <ul class="dropdown">
+                        <li th:each="category:${categories}">
+                            <a th:text="${category.name}" th:href="@{'/filter-by-category/' + ${category.id}}" class="has-children"></a>
+                            <ul class="dropdown">
+                                <li th:each="subcategory:${subcategories}" th:if="${subcategory.category.id}"><a th:text="${subcategory.name}" th:href="@{'/filter-by-subcategory/' + ${subcategory.id}}">Menu One</a></li>
+                            </ul></li>
+                        <!--<li class="has-children">
+                            <a href="#">Sub Menu</a>
+                            <ul class="dropdown">
+                                <li><a href="#">Menu One</a></li>
+                                <li><a href="#">Menu Two</a></li>
+                                <li><a href="#">Menu Three</a></li>
+                            </ul>
+                        </li>-->
+                    </ul>
+                </li>
+                <li><a th:href="@{'/'}">КАТАЛОГ</a></li>
+                <li th:each="category:${categories}"><a th:text="${category.name}" th:href="@{'/filter-by-category/' + ${category.id}}"></a></li>
+                <li><a href="?lng=ru">RU</a></li>
+                <li><a href="?lng=en">EN</a></li>
+                <li class="active" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#addProduct">ДОБАВИТЬ ПРОДУКТ</a></li>
+                <li href="JavaScript:void(0)" onclick="document.getElementById('logoutForm').submit()"><a sec:authorize="isAuthenticated()" style="color: red;">ВЫЙТИ</a></li>
+                <form th:action="@{'/logout'}" method="post" id="logoutForm" sec:authorize="isAuthenticated()"></form>
+            </ul>
+        </div>
+    </nav>
+</header>
+</div>
+</body>
+</html>

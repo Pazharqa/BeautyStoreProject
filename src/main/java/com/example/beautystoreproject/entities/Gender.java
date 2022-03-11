@@ -22,5 +22,7 @@ public class Gender {
     private Long id;
     @Column(name = "gender_name", length = 255)
     private String name;
+    @Column
+    private String image;
 }
 

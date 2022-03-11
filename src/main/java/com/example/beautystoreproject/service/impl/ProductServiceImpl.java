@@ -48,5 +48,10 @@ public class ProductServiceImpl implements ProductService {
         return productsRepository.findAllBySubcategoryId(id);
     }
 
+    @Override
+    public List<Product> findAllByGenderId(Long id) {
+        return productsRepository.findAllByGenderId(id);
+    }
+
 
 }
